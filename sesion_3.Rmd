@@ -1,0 +1,705 @@
+---
+title: "Capacitación en R y herramientas de productividad"
+subtitle: "Sesión 3"  
+author: 
+date: '`r Sys.Date()`'
+output:
+  xaringan::moon_reader:
+    seal: false
+    #lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: False
+---
+
+class: center, middle
+
+.linea-superior[]
+.linea-inferior[]
+
+
+<img src="imagenes/logo_portada2.png" width="200" />
+
+
+## Capacitación en R y herramientas de productividad
+
+## Proyecto Estratégico Servicios Compartidos para la Producción Estadística
+
+## Procesamiento de bases de datos (2)
+
+### Septiembre 2020
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = TRUE)
+knitr::opts_chunk$set(message = FALSE) 
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+#style_duo_accent(
+ # primary_color = "#1381B0",
+  #secondary_color = "#FF961C",
+  #inverse_header_color = "#FFFFFF"
+#)
+```
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Sesión 3: Procesamiento de BBDD (2)
+
+--
+<br/>
+
+- .medium-par[Unión de bases de datos (joins, binds)📌]
+<br/>
+<br/>
+
+--
+
+- .medium-par[Manejo de variables de tiempo (fechas) 📆]
+<br/>
+<br/>
+
+--
+
+- .medium-par[Manejo de variables factor 😻]
+<br/>
+<br/>
+
+---
+
+background-image: url(https://media.giphy.com/media/d6igLr7klmdCU/giphy.gif)
+background-size: cover
+class: center, up, inverse
+
+<br/>
+# Unión de *data frames*
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Unión de *data frames*
+
+--
+
+<br/>
+<br/>
+<br/>
+
+.center[.big-par[¿Para qué tareas creen que es .big-par-red[útil] conocer sobre uniones de bases de datos?]]
+
+--
+
+.center[.big-par[🤔]]
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Unión de *data frames*
+
+--
+<br/>
+<br/>
+La mayoría de las funciones para .pur[análisis] y .pur[transformación] de datos que utilizaremos en este curso están diseñadas para operar sobre una tabla o *data frame*.
+
+--
+
+`R` incluye en sus paquetes base una función multipropósito para unir datos llamada `merge()`.
+
+--
+
+.pur[Vamos a ignorar] `merge()` en esta ocasión y enfocarnos en algunas funciones de `dplyr` que .pur[tienen el mismo objetivo].
+
+--
+
+¿Por qué?
+
+--
+
+- Los `joins` de `dplyr` ofrecen más control sobre el proceso, dado que existen distintas funciones para generar uniones *ad hoc* a nuestros requerimientos.
+
+--
+
+- Los `joins` mantienen el orden de las filas (no así necesariamente `merge()`)
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Unión de *data frames*
+
+--
+
+
+.medium-par[No queremos que nos vaya a pasar...]
+
+
+.pull-left[
+![](https://media.giphy.com/media/cFkiFMDg3iFoI/giphy.gif)
+
+]
+
+--
+
+.pull-right[
+
+.medium-par[O esto...]
+
+![](https://media0.giphy.com/media/P4TqKx6NHyLnO/giphy.gif?cid=3640f6095c91abd67a467174592b5512)
+]
+
+--
+
+Los `joins` son un set de funciones que son parte de `dplyr`.
+
+--
+
+Y al igual que las funciones de `dplyr` que aprendimos previamente, comparten su .medium-par-red[gramática] y .medium-par-red[simpleza]. 
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Familia Join
+
+--
+
+Como .pur[intuición básica], los joins .medium-par-red[combinan] dos data frames agregando columnas de uno al otro.
+
+--
+
+Si bien existen **6 tipos de joins básicos**, revisaremos acá los **2 que más se utilizan**.
+
+--
+
+- `left_join()`
+- `inner_join()`
+
+Que son 3 de los 4 joins denominados como .pur[*mutating*] joins.
+
+--
+
+Y también veremos 2 funciones muy sencillas de .pur[ensamblaje] de *data frames* con `dplyr`.
+
+- `bind_rows()` (su simil en lenguaje R base es `rbind()`)
+- `bind_cols()` (su simil en lenguaje R base es `cbind()`)
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Familia Join
+
+--
+
+Entonces, .pur[a modo de contexto], veamos los tipos de `joins` que existen.
+
+--
+
+.center[
+<img src="imagenes/join_dplyr.png" width="400" />
+]
+
+--
+
+Como pueden ver, **son bastantes** (y no están todos ahí 😱🤯 ). Esto es porque son .pur[muy específicos].
+
+--
+
+Poder usar cada uno de forma precisa es todo un arte 🎨🖌.
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Tipos de uniones (no solo joins) 
+
+--
+
+Hay .pur[diferentes tipos de uniones] de *data frames*:
+
+.pull-left[
+
+.pur[*Mutating joins:*] para agregar columnas.
+
+- `left_join()`
+- `right_join()`
+- `inner_join()`
+- `full_join()`
+
+<br/>
+.pur[*Joins de filtrado:*] para extraer o filtrar filas.
+
+- `semi_join()`
+- `anti_join()`
+
+.pur[*funciones de ensamblaje:*] para "pegar" *data frames*
+
+- `bind_rows()`
+- `bind_cols()`
+]
+
+.pull-right[
+<img src="imagenes/filter_mut.png" width="200" />
+]
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# dplyr::left_join()
+
+--
+
+Es la función de unión más básica y .medium-par-red[más utilizada] entre los `joins`.
+
+--
+
+¿Qué hace `left_join()`?
+
+--
+
+(En adelante, llamaremos al primer *data frame* .medium-par[X] y al segundo .medium-par[Y])
+
+--
+
+- Retorna **todas las filas de X** y .pur[todas las columnas de X e Y].
+
+--
+
+- Las filas de X que no tienen *match* en Y, tendrán `NAs` en las nuevas variables.
+
+--
+
+- Las filas de Y que no tienen *match* en X, **son ignoradas por completo**.
+
+--
+
+.center[
+<img src="imagenes/left_join.png" width="650" />
+]
+
+--
+
+.medium-par[`right_join()` hace exactamente lo mismo pero al revés.] 
+
+--
+
+.medium-par[Veamos un ejemplo...]
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Familia Join
+
+.pull-left[
+```{r, warning=F}
+library(dplyr)
+band_members
+```
+]
+
+--
+
+.pull-right[
+```{r, warning=F}
+band_instruments
+```
+]
+
+--
+
+```{r}
+left_join(band_members, band_instruments, by = "name")
+```
+
+--
+
+Se puede hacer lo mismo con *pipes*.
+
+```{r, eval = FALSE}
+band_members %>% left_join(band_instruments, by = "name")
+```
+
+--
+
+.pur[¿Cuál es la llave o *key* que conecta los dos *data frames*?]
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+
+# Sobre las llaves (*keys*)
+
+--
+
+Aunque en problemas de pocas variables no es necesario indicarla (podríamos no haber escrito `by = "name"`).
+
+--
+
+La llave en general es muy importante, y sirve para .pur[individualizar sin ambiguedades] a cada observación.
+
+--
+
+Es por eso que puede estar compuesta por una, dos, o más variables si es necesario.
+
+--
+
+.pull-left[
+<img src="imagenes/llave_unica.png" width="400" />
+]
+
+--
+
+.pull-right[
+<img src="imagenes/llave_doble.png" width="400" />
+]
+
+--
+
+.center[**base X:** *primary key* / **base Y:** *foreign key*.]
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# dplyr::inner_join()
+
+--
+
+.medium-par[Retorna **SOLO las filas de X donde hay *match* con Y** y todas las columnas de X e Y.]
+
+--
+
+Las filas de X que no tienen *match* en Y, .pur[son ignoradas por completo].
+
+--
+
+Las filas de Y que no tienen *match* en X, .pur[son ignoradas por completo].
+
+--
+
+.medium-par[Esta función generalmente reduce filas de un *data frame*.]
+
+--
+
+.center[
+<img src="imagenes/inner_join.png" width="650" />
+]
+
+--
+
+.medium-par[Veamos un ejemplo...]
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# dplyr::inner_join()
+
+--
+
+Tomemos este código y creemos `songs` y `albums`.
+
+```{r,}
+
+songs <- tibble(song = c("Come Together", "Dream On", "Hello,Goodbye", "It's Not Unusual"),
+                album  = c("Abbey Road", "Aerosmith", "Magical Mystery Tour", "Along Came Jones"),
+                first = c("John", "Steven", "Paul", "Tom"),
+                last = c("Lennon", "Tyler", "McCartney", "Jones"))
+
+albums <- tibble( album = c("A Hard Day's Night", "Magical Mystery Tour", "Beggar's Banquet",
+                            "Abbey Road", "Led Zeppelin IV", "The Dark Side of the Moon",
+                            "Aerosmith", "Rumours", "Hotel California"),
+                  band = c("The Beatles", "The Beatles", "The Rolling Stones",
+                           "The Beatles", "Led Zeppelin", "Pink Floyd", "Aerosmith",
+                           "Fleetwood Mac", "Eagles"),
+                  year = c(1964,1967,1968,1969,1971,1973,1973,1977,1982))
+```
+
+--
+
+.medium-par[¿Cuál es la posible llave entre estos dos *data frames*? 🤨]
+
+--
+
+¿Qué pasará si hacemos un `inner_join()` sin especificar una llave?
+
+--
+
+Vamos a ver...
+
+---
+
+```{r, message= TRUE}
+songs %>% inner_join(albums)
+```
+
+--
+
+En este caso **no hay ambigüedad**, por lo que R entiende cuál es la llave.
+
+--
+
+Puedo restringir la cantidad de columnas que quiero unir de cualquiera de los dos *data frames*.
+
+--
+
+```{r}
+songs[c(1,2)] %>% inner_join(albums[-3], by = "album")
+```
+
+--
+
+Como pueden notar, la dificultad de los `joins` no está en el código.
+
+--
+
+.medium-par[Se encuentra en decidir cómo, cuándo y cuál usar.]
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Mini-ejercicio 1 
+
+## Ahora ustedes...
+
+--
+
+Creemos estas dos *tibbles* de `artists` y `bands`.
+
+```{r}
+artists <- tibble(first = c("Jimmy", "George", "Mick", "Tom", "Davy", 
+                            "John", "Paul", "Jimmy", "Joe", "Elvis", "Keith",
+                            "Paul", "Ringo", "Joe", "Brian", "Nancy"),
+                  last = c("Buffett", "Harrison", "Jagger", "Jones", "Jones",
+                            "Lennon", "McCartney", "Page", "Perry", "Presley", 
+                           "Richards", "Simon", "Starr", "Walsh", "Wilson", "Wilson"),
+                  instrument = c("Guitar", "Guitar", "Vocals", "Vocals", "Vocals", 
+                                 "Guitar", "Bass", "Guitar", "Guitar", "Vocals",
+                                  "Guitar", "Guitar", "Drums", "Guitar", "Vocals", "Vocals"))
+
+bands <- tibble(first = c("John", "John Paul", "Jimmy", "Robert", "George", "John", 
+                          "Paul", "Ringo", "Jimmy", "Mick", "Keith",  "Charlie", "Ronnie"),
+                last = c("Bonham", "Jones", "Page", "Plant", "Harrison", "Lennon", "McCartney",
+                         "Starr", "Buffett", "Jagger", "Richards", "Watts", "Wood"), 
+                band = c("Led Zeppelin", "Led Zeppelin", "Led Zeppelin", "Led Zeppelin", 
+                         "The Beatles", "The Beatles", "The Beatles", "The Beatles", 
+                         "The Coral Reefers", "The Rolling Stones", "The Rolling Stones", 
+                         "The Rolling Stones", "The Rolling Stones"))
+```
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Mini-ejercicio 1 
+
+--
+
+Utilizando las bases `artists` y `bands`.
+
+--
+
+1- Generar una base de datos que contenga *fisrt* (nombre), *last* (apellido) y la banda (*band*), para **todos** los artistas presentes en la base `artists`.
+
+--
+
+.medium-par[¿Qué pueden observar sobre la base resultante?]
+
+--
+
+2- Generar una base de datos que contenga *fisrt* (nombre), *last* (apellido) y la banda (*band*), pero solo con los artistas que tienen información en las 3 variables.
+
+--
+
+.medium-par[¿Cuántas observaciones tiene la base creada?]
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Mini-ejercicio 1: solución
+
+--
+
+**Ejercicio 1:**
+
+```{r}
+artists %>% left_join(bands, by = c("first", "last")) %>% head()
+```
+
+--
+
+**Ejercicio 2:**
+
+```{r}
+artists %>% inner_join(bands, by = c("first", "last")) %>% head(5)
+```
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Funciones de ensamblaje 
+
+--
+
+hasta ahora no se ha mencionado la forma más sencilla de unir 2 *data frames*.
+
+--
+
+Si tenemos dos *data frames* que tienen la misma estructura de columnas o de filas...
+
+--
+
+**Por ejemplo:** submuestras de una encuesta, distintos años de un RRAA, etc.
+
+--
+
+Podemos simplemente .medium-par-red[ensamblarlas.]
+
+--
+
+`R` base trae por defecto `rbind()` para pegar filas y `cbind()` para columnas.
+
+--
+
+Recomendamos usar `bind_rows()` y `bind_cols()` de `dplyr()`.
+
+--
+
+**Importante:** `rbind`, pero también `bind_cols()` no usan una llave, **suponen que las filas están en el mismo orden**.
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# bind_rows() y bind_cols()
+
+--
+
+¿por qué preferir `bind_rows()` y `bind_cols()` en vez de `rbind()` y `cbind()`?
+
+--
+
+- Son más rápidas
+
+--
+
+- Siempre retornan una `tibble`, que es una versión mejorada de un *data frame*.
+
+--
+
+- Tienen una sintaxis más flexible.
+
+--
+
+- **Y lo más importante:** ".id", permite identificar el origen de cada fila. Esto hace más fácil su tratamiento.
+
+--
+
+```{r, eval = FALSE}
+bind_rows(label1 = df1, label2 = df2, .id= "var_id")
+```
+
+--
+
+Generemos un ejemplo de juguete solo para ejemplificar el uso de `bind_rows`
+
+--
+
+```{r}
+artists_2 = artists #duplicamos este data frame solo con un fin pedagógico
+
+ensamble <- bind_rows(artists = artists, artists_2 = artists_2, .id= "origen")
+
+```
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Referencias
+
+.medium-par[Nada de esto sería posible sin:]
+
+- [R for Data Science, de Hadley Wickham](https://r4ds.had.co.nz/)
+
+- [Advanced R, de Hadley Wickham](http://adv-r.had.co.nz/Introduction.html)
+
+- [Data wrangling, exploration, and analysis with R, de Jenny Bryan](http://stat545.com/index.html)
+
+- [Introduction to R, de Data Carpentry](https://datacarpentry.org/R-genomics/01-intro-to-R.html#functions)
+
+- [Xaringan: Presentation Ninja, de Yihui Xie](https://github.com/yihui/xaringan). Para generar esta presentación con la plantilla ninja ⚔
+
+.medium-par[R for Data Science tiene una traducción al español realizada por la comunidad hispana de R:]
+
+- [R para ciencia de datos, de Hadley Wickham](https://es.r4ds.hadley.nz/)
+
+---
+
+class: center, middle
+
+.linea-superior[]
+.linea-inferior[]
+
+
+<img src="imagenes/logo_portada2.png" width="200" />
+
+
+## Capacitación en R y herramientas de productividad
+
+## Proyecto Estratégico Servicios Compartidos para la Producción Estadística
+
+## Procesamiento de bases de datos (2)
+
+### Septiembre 2020
