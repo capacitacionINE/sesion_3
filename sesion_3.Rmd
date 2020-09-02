@@ -216,7 +216,7 @@ Entonces, .pur[a modo de contexto], veamos los tipos de `joins` que existen.
 --
 
 .center[
-<img src="imagenes/join_dplyr.png" width="400" />
+<img src="imagenes/join_dplyr.PNG" width="400" />
 ]
 
 --
@@ -261,7 +261,7 @@ Hay .pur[diferentes tipos de uniones] de *data frames*:
 ]
 
 .pull-right[
-<img src="imagenes/filter_mut.png" width="200" />
+<img src="imagenes/filter_mut.PNG" width="200" />
 ]
 
 ---
@@ -299,7 +299,7 @@ Es la función de unión más básica y .medium-par-red[más utilizada] entre lo
 --
 
 .center[
-<img src="imagenes/left_join.png" width="650" />
+<img src="imagenes/left_join.PNG" width="650" />
 ]
 
 --
@@ -375,13 +375,13 @@ Es por eso que puede estar compuesta por una, dos, o más variables si es necesa
 --
 
 .pull-left[
-<img src="imagenes/llave_unica.png" width="400" />
+<img src="imagenes/llave_unica.PNG" width="400" />
 ]
 
 --
 
 .pull-right[
-<img src="imagenes/llave_doble.png" width="400" />
+<img src="imagenes/llave_doble.PNG" width="400" />
 ]
 
 --
@@ -415,7 +415,7 @@ Las filas de Y que no tienen *match* en X, .pur[son ignoradas por completo].
 --
 
 .center[
-<img src="imagenes/inner_join.png" width="650" />
+<img src="imagenes/inner_join.PNG" width="650" />
 ]
 
 --
