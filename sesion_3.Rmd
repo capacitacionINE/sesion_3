@@ -66,11 +66,6 @@ background-position: 100% 0%
 <br/>
 <br/>
 
---
-
-- .medium-par[Manejo de variables factor 😻]
-<br/>
-<br/>
 
 ---
 
@@ -96,6 +91,30 @@ background-position: 100% 0%
 <br/>
 
 .center[.big-par[¿Para qué tareas creen que es .big-par-red[útil] conocer sobre uniones de bases de datos?]]
+
+--
+
+.center[.big-par[🤔]]
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Unión de *data frames*
+
+--
+
+<br/>
+<br/>
+<br/>
+.center[.big-par[¿Alguna vez han tenido que unir bases de datos?]]
+
+--
+
+.center[.medium-par[¿O en su .pur[vida cotidiana], han notado que en diversas situaciones ocurren uniones de bases de datos?]]
 
 --
 
@@ -464,6 +483,13 @@ Vamos a ver...
 
 ---
 
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# dplyr::inner_join()
+
+
 ```{r, message= TRUE}
 songs %>% inner_join(albums)
 ```
@@ -482,7 +508,13 @@ Puedo restringir la cantidad de columnas que quiero unir de cualquiera de los do
 songs[c(1,2)] %>% inner_join(albums[-3], by = "album")
 ```
 
---
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# dplyr::inner_join()
 
 Como pueden notar, la dificultad de los `joins` no está en el código.
 
@@ -663,6 +695,475 @@ ensamble <- bind_rows(artists = artists, artists_2 = artists_2, .id= "origen")
 
 ---
 
+background-image: url(https://media2.giphy.com/media/xsF1FSDbjguis/200w.webp?cid=3640f6095c9321d95239485951223fbe)
+background-size: cover
+class: center, bottom, inverse
+
+# Variables de tiempo en R
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Variables de tiempo en R
+
+--
+
+Las .medium-par[fechas y horas ⏳], como información, presentan una **gran versatilidad **para el análisis de diversos fenómenos.
+
+--
+
+En este módulo **solo veremos fechas** 📆, pero para horas, minutos y segundos la lógica es la misma.
+
+--
+
+Sin embargo, si bien es posible trabajar variables de tiempo sin herramientas dedicadas, sería **extremadamente engorroso**, y se requerirían .pur[herramientas medianamente sofisticadas] para transformar estas variables en objetos con los que podamos operar.
+
+--
+
+Para eso `R` ofrece herramientas dedicadas especialmente a solucionarnos la vida. Podrían separarse en 2 tipos:
+
+--
+
+- Herramientas para .pur[organizar fechas en un formato reconocible].
+
+- Herramientas que .pur[traduzcan] estas fechas de formato estandarizado a .medium-par-red[números].
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Variables de tiempo en R
+
+
+Y con números se pueden hacer muchas cosas: **operaciones matemáticas**, **gráficos**, etc. Mientras `R` por detrás trabaja con números, nosotros seguimos viendo sencillas y amigables fechas 🙃.
+
+--
+
+```{r}
+# Pueden reemplazar esta fecha por sus cumpleaños
+mi_cumple <- ("1985-06-12"); 
+str(mi_cumple)
+```
+
+--
+
+```{r}
+mi_cumple <- as.Date(mi_cumple); 
+str(mi_cumple)
+```
+
+--
+
+```{r}
+as.numeric(mi_cumple)
+```
+
+--
+
+La función `as.Date()` recibió una cadena de caracteres y la transformó en un objeto fecha (`date`), y esa fecha aloja un número. .medium-par-red[¿Qué representa ese número?]
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Variables de tiempo en R
+
+```{r}
+as.numeric(as.Date("1970-01-01"))
+```
+
+--
+
+Es la distancia desde un momento **escogido de manera arbitraria**: el .medium-par-red[1 de enero de 1970].
+
+--
+
+`as.Date()` es una función sencilla de usar, **pero no es muy robusta para el trabajo con fechas**.
+
+--
+
+```{r}
+mi_cumple <- as.Date("12-06-1985"); str(mi_cumple) 
+```
+
+--
+
+.pur[No soluciona el problema del ordenamiento]. Requiere asistentes para hacerlo. 
+
+--
+
+```{r}
+library(anytime)
+mi_cumple <- as.Date(anydate("12-06-1985")); str(mi_cumple) 
+```
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Variables de tiempo en R
+
+--
+
+Aún así, **no hay que descartarla**, es muy útil cuando el formato es la norma ISO 8661. Esta indica un formato .medium-par-red[YYYY-MM-DD] y una cantidad de dígitos por parámetro (4-2-2).
+
+--
+
+Dentro del universo de `tidyverse` existe una **librería especializada para el tratamiento de fechas y horas**.
+
+--
+
+Se llama `lubridate` y su objetivo es hacer más intuitiva la manipulación y análisis de este tipo de variables.
+
+--
+
+Veamos algunos operadores básicos muy útiles.
+
+--
+
+`R` base tiene funciones para extraer la fecha y hora en el momento de la consulta.
+
+```{r}
+Sys.Date() # La fecha de hoy
+Sys.time() # el momento exacto, con fecha, horas, minutos y segundos
+```
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Manejo de fechas con `lubruidate`
+
+--
+
+`lubridate` tiene funciones que hacen lo mismo, pero con un lenguaje más intuitivo.
+
+--
+
+```{r}
+library(lubridate) # cargamos lubridate
+today() 
+now()
+```
+
+--
+
+**Hay 2 formas principales para crear una fecha.**
+
+--
+
+- Desde una cadena de caracteres o numeros. 
+
+--
+
+- Desde componentes *date-time* individuales.
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Manejo de fechas con `lubruidate`
+
+--
+
+.pull-left[
+
+**1. Desde cadenas de caracteres**
+
+
+- La más habitual es a partir de cadenas de caracteres.
+
+- Existen helpers en `lubridate` que automáticamente ordenan el formato de una variable fecha.
+
+- Solo hay que ordenarlos de acuerdo al input.
+
+- Se aceptan diferentes tipos de separadores.
+
+]
+
+.pull-right[
+```{r}
+ymd("1985-06-12")
+# No asimila bien el mes en español
+mdy("Jun 12, 1985")
+dmy("12/jun/1985")
+```
+
+]
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Manejo de fechas con `lubridate`
+
+--
+
+También se pueden crear fechas a partir de variables numéricas. .medium-par-red[Siempre y cuando respeten el orden y cantidad de dígitos].
+
+--
+
+```{r}
+ymd(20190322)
+dmy(22032019)
+```
+
+--
+
+**2. Creación desde componentes *date-time* individuales**
+
+--
+
+A veces las fechas nos llegan en un *data frame* separadas en día, mes, año.
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Manejo de fechas con `lubridate`
+
+--
+
+Debemos unirlas para operarlas como objetos *date*. **Usaremos la base de nacimientos de EEVV 2017**.
+
+--
+
+Para crear un objeto `date` que llamaremos `fecha_nac` usamos la función `make_date()` de `lubridate`.
+
+
+```{r}
+# cargamos la base
+library(readxl)
+library(janitor)
+library(lubridate)
+nac2017 <- read_excel("C:/Users/Trabajo/OneDrive - Instituto Nacional de Estadisticas/PE SSCC/Capacitacion R/sesion_3/data/nac_2017.xlsx")
+nac2017 <- clean_names(nac2017)
+
+# seleccionamos día, mes, año de nacimiento y creaos la fecha
+nac2017 %>% 
+  select(dia_nac, mes_nac, ano_nac) %>% 
+  mutate(fecha_nac = make_date(ano_nac, mes_nac, dia_nac)) %>% 
+  head()
+```
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Manejo de fechas con `lubridate`
+
+--
+
+Así como podemos componer una fecha, también podemos descomponerla.
+
+--
+
+```{r}
+mi_cumple <- dmy("12-06-1985")
+year(mi_cumple)
+month(mi_cumple, label = T) # con label se pide la etiqueta
+mday(mi_cumple)
+wday(mi_cumple) # considera que el día 1 es el domingo
+```
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Operaciones aritméticas
+
+--
+
+Por ejemplo, pueden saber .pur[cuántos días de vida tienen]. 
+
+```{r}
+today() - ymd("1985-06-12") 
+```
+
+--
+
+Existe un **set de funciones** que sirven para operar sobre periodos de tiempo de una manera .pur[intuitiva y versatil]: se llaman `periods` y algunos da ellos son:
+
+```{r, eval=FALSE}
+days(1)
+weeks(1)
+months(1) # esta función es de R base
+years(1)
+```
+
+--
+
+¿Qué podemos hacer con ellos?
+
+```{r}
+# ¿que fecha es en un año y un mes más?
+today() + years(1) + months(1)
+```
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Operaciones aritméticas
+
+--
+
+Podemos, por ejemplo, crear una variable *deadline* que indique cuándo es un mes después de un punto inicial.
+
+```{r}
+inicio <- as.Date("2020-08-30")
+inicio + months(1)
+```
+
+--
+
+Pero no es una función tan robusta. .pur¿Qué pasa con los meses de 31 días?
+
+--
+
+```{r}
+inicio <- ymd("2020-08-31") # esta otra función es parecida a as.Date
+inicio + months(1)
+```
+
+--
+
+No sabe qué hacer y entrega un `NA`. Pero `lubridate()` contiene operadores .pur[robustos] para solucionarlo.
+
+--
+
+```{r}
+inicio %m+% months(1)
+```
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Operaciones aritméticas
+
+--
+
+`%m+%` también funciona con años y días. .medium-par[También existe `%m-%` para restar periodos].
+
+--
+
+```{r}
+bisiesto <- ymd("2020-02-29")
+bisiesto %m+% years(1)
+bisiesto %m+% days(1)
+```
+
+--
+
+Además se pueden generar automáticamente varios periodos. .pur[Esto puede ser muy útil para validar datos] 👀
+
+```{r}
+inicio %m+% months(1:6)
+```
+
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Operaciones aritméticas
+
+--
+
+Tambien podemos calcular **intervalos de tiempo** entre dos momentos de manera consistente.
+
+--
+
+Para eso utilizamos el operador .medium-par[`%--%`].
+
+--
+
+```{r}
+siguiente_año <- today() + years(1)
+(today() %--% siguiente_año) / days(1) # diferencia en días
+```
+
+--
+
+Para encontrar cuántos períodos caen dentro de un intervalo, con `%/%` pueden obtener la división entera:
+
+--
+
+```{r}
+(today() %--% siguiente_año) / weeks(1)
+
+```
+
+Ahora con `%/%`.
+
+```{r}
+(today() %--% siguiente_año) %/% weeks(1)
+```
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Manejo de fechas con `lubridate`
+
+--
+
+El uso de `lubridate` puede generar **cierta dificultad** en un principio.
+
+--
+
+Esto debido a la cantidad de operadores nuevos que ofrece (%--%, %m+%, %m-%, etc.).
+
+--
+
+Pero si trabajamos habitualmente con fechas u horas, y son un aspecto importante de nuestro trabajo, vale mucho la pena estudiarlos bien.
+
+--
+
+Pues `lubridate` ofrece herramientas .medium-par-red[precisas] y .medium-par-red[robustas] para el trabajo con datos temporales.
+
+--
+
+.medium-par[Que además son absolutamente compatibles con las librerías de `tidyverse`].
+
+--
+
+Pueden encontrar muchísima más información [aquí](https://lubridate.tidyverse.org/).
+
+---
+
 background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
@@ -680,6 +1181,8 @@ background-position: 100% 0%
 - [Introduction to R, de Data Carpentry](https://datacarpentry.org/R-genomics/01-intro-to-R.html#functions)
 
 - [Xaringan: Presentation Ninja, de Yihui Xie](https://github.com/yihui/xaringan). Para generar esta presentación con la plantilla ninja ⚔
+
+- [Tutorial de `lubridate`](https://lubridate.tidyverse.org/)
 
 .medium-par[R for Data Science tiene una traducción al español realizada por la comunidad hispana de R:]
 
