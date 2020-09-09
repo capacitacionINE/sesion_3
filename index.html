@@ -4,7 +4,7 @@
     <title>Capacitación en R y herramientas de productividad</title>
     <meta charset="utf-8" />
     <meta name="author" content="" />
-    <meta name="date" content="2020-09-08" />
+    <meta name="date" content="2020-09-09" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
   <body>
@@ -191,7 +191,7 @@ Como .pur[intuición básica], los joins .medium-par-red[combinan] dos data fram
 
 --
 
-Si bien existen **6 tipos de joins básicos**, revisaremos acá los **2 que más se utilizan**.
+Si bien existen **6 tipos de joins básicos**, nos concentraremos acá los **2 que más se utilizan**.
 
 --
 
@@ -322,7 +322,7 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Familia Join
+# dplyr::left_join()
 
 .pull-left[
 
@@ -622,7 +622,7 @@ Utilizando las bases `artists` y `bands`.
 
 --
 
-2- Generar una base de datos que contenga *fisrt* (nombre), *last* (apellido) y la banda (*band*), pero solo con los artistas que tienen información en las 3 variables.
+2- Generar una base de datos, a partir *artist* y *bands*, que contenga las variables *fisrt* (nombre), *last* (apellido), la banda (*band*) e instrumento (*instrument*), que incluya solo a los artistas que tienen información en las 4 variables.
 
 --
 
@@ -712,7 +712,7 @@ Recomendamos usar `bind_rows()` y `bind_cols()` de `dplyr()`.
 
 --
 
-**Importante:** `rbind`, pero también `bind_cols()` no usan una llave, **suponen que las filas están en el mismo orden**.
+**Importante:** `cbind`, pero también `bind_cols()` no usan una llave, **suponen que las filas están en el mismo orden**.
 
 ---
 
@@ -740,18 +740,11 @@ background-position: 100% 0%
 
 --
 
-- **Y lo más importante:** ".id", permite identificar el origen de cada fila. Esto hace más fácil su tratamiento.
+- **Y lo más importante:** el argumento ".id" de `bind_rows()`, permite identificar el origen de cada fila. Esto hace más fácil su tratamiento.
 
 --
 
-
-```r
-bind_rows(label1 = df1, label2 = df2, .id= "var_id")
-```
-
---
-
-Generemos un ejemplo de juguete solo para ejemplificar el uso de `bind_rows`
+Generemos un ejemplo de juguete solo para ejemplificar el uso de `bind_rows`.
 
 --
 
@@ -759,7 +752,7 @@ Generemos un ejemplo de juguete solo para ejemplificar el uso de `bind_rows`
 ```r
 artists_2 = artists #duplicamos este data frame solo con un fin pedagógico
 
-ensamble &lt;- bind_rows(artists = artists, artists_2 = artists_2, .id= "origen")
+ensamble &lt;- bind_rows(original = artists, duplic = artists_2, .id= "base_datos")
 ```
 
 ---
@@ -816,7 +809,7 @@ Y con números se pueden hacer muchas cosas: **operaciones matemáticas**, **gr�
 
 ```r
 # Pueden reemplazar esta fecha por sus cumpleaños
-mi_cumple &lt;- ("1985-06-12"); 
+mi_cumple &lt;- ("1985-06-12")
 str(mi_cumple)
 ```
 
@@ -828,7 +821,7 @@ str(mi_cumple)
 
 
 ```r
-mi_cumple &lt;- as.Date(mi_cumple); 
+mi_cumple &lt;- as.Date(mi_cumple)
 str(mi_cumple)
 ```
 
@@ -938,7 +931,7 @@ Sys.Date() # La fecha de hoy
 ```
 
 ```
-## [1] "2020-09-08"
+## [1] "2020-09-09"
 ```
 
 ```r
@@ -946,7 +939,7 @@ Sys.time() # el momento exacto, con fecha, horas, minutos y segundos
 ```
 
 ```
-## [1] "2020-09-08 21:19:20 -03"
+## [1] "2020-09-09 02:16:56 -03"
 ```
 
 ---
@@ -970,7 +963,7 @@ today()
 ```
 
 ```
-## [1] "2020-09-08"
+## [1] "2020-09-09"
 ```
 
 ```r
@@ -978,7 +971,7 @@ now()
 ```
 
 ```
-## [1] "2020-09-08 21:19:20 -03"
+## [1] "2020-09-09 02:16:56 -03"
 ```
 
 --
@@ -1106,20 +1099,19 @@ Para crear un objeto `date` que llamaremos `fecha_nac` usamos la función `make_
 ```r
 # cargamos la base
 library(readxl)
-library(janitor)
 library(lubridate)
-nac2017 &lt;- read_excel("C:/Users/Trabajo/OneDrive - Instituto Nacional de Estadisticas/PE SSCC/Capacitacion R/sesion_3/data/nac_2017.xlsx")
-nac2017 &lt;- clean_names(nac2017)
 
-# seleccionamos día, mes, año de nacimiento y creaos la fecha
+nac2017 &lt;- read_excel("data/nac_2017.xlsx")
+
+# seleccionamos día, mes, año de nacimiento y creaoms una fecha
 nac2017 %&gt;% 
   select(dia_nac, mes_nac, ano_nac) %&gt;% 
   mutate(fecha_nac = make_date(ano_nac, mes_nac, dia_nac)) %&gt;% 
-  head()
+  head(5)
 ```
 
 ```
-## # A tibble: 6 x 4
+## # A tibble: 5 x 4
 ##   dia_nac mes_nac ano_nac fecha_nac 
 ##     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;date&gt;    
 ## 1      27      11    2017 2017-11-27
@@ -1127,8 +1119,71 @@ nac2017 %&gt;%
 ## 3      21       3    2017 2017-03-21
 ## 4      28       6    2017 2017-06-28
 ## 5      10       4    2017 2017-04-10
-## 6      14      10    2017 2017-10-14
 ```
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Mini-ejercicio 2
+
+--
+&lt;br/&gt;
+&lt;br/&gt;
+Utilizando la base de datos "nac2017" que acabamos de cargar en nuestro entorno de trabajo.
+
+--
+&lt;br/&gt;
+&lt;br/&gt;
+1- Generar dentro de la base de datos (en la misma o un objeto nuevo) una variable llamada "fecha_nac" que contenga en un solo campo la fecha de nacimiento completa de cada nacido.
+
+--
+&lt;br/&gt;
+&lt;br/&gt;
+2- Generar además una variable llamada "fecha_ins" que contenga en un solo campo la fecha de inscripción completa de cada nacido.
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Mini-ejercicio 2: solución
+
+--
+
+Es posible crear ambas variables en un solo paso.
+
+
+
+```r
+nac2017 &lt;- nac2017 %&gt;% 
+  mutate(fecha_nac = make_date(ano_nac, mes_nac, dia_nac),
+         fecha_ins = make_date(ano_ins, mes_ins, dia_ins)) 
+```
+
+
+```r
+nac2017 %&gt;% select(ano_nac, mes_nac, dia_nac, ano_ins, mes_ins,
+                   dia_ins, fecha_nac, fecha_ins) %&gt;%
+  head() 
+```
+
+```
+## # A tibble: 6 x 8
+##   ano_nac mes_nac dia_nac ano_ins mes_ins dia_ins fecha_nac  fecha_ins 
+##     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;date&gt;     &lt;date&gt;    
+## 1    2017      11      27    2017      11      30 2017-11-27 2017-11-30
+## 2    2017       1      27    2017       2       2 2017-01-27 2017-02-02
+## 3    2017       3      21    2017       3      23 2017-03-21 2017-03-23
+## 4    2017       6      28    2017       7       3 2017-06-28 2017-07-03
+## 5    2017       4      10    2017       4      13 2017-04-10 2017-04-13
+## 6    2017      10      14    2017      10      16 2017-10-14 2017-10-16
+```
+
+
 
 ---
 
@@ -1154,6 +1209,9 @@ year(mi_cumple)
 ## [1] 1985
 ```
 
+--
+
+
 ```r
 month(mi_cumple, label = T) # con label se pide la etiqueta
 ```
@@ -1163,6 +1221,9 @@ month(mi_cumple, label = T) # con label se pide la etiqueta
 ## 12 Levels: ene &lt; feb &lt; mar &lt; abr &lt; may &lt; jun &lt; jul &lt; ago &lt; sep &lt; ... &lt; dic
 ```
 
+--
+
+
 ```r
 mday(mi_cumple)
 ```
@@ -1170,6 +1231,9 @@ mday(mi_cumple)
 ```
 ## [1] 12
 ```
+
+--
+
 
 ```r
 wday(mi_cumple) # considera que el día 1 es el domingo
@@ -1197,7 +1261,7 @@ today() - ymd("1985-06-12")
 ```
 
 ```
-## Time difference of 12872 days
+## Time difference of 12873 days
 ```
 
 --
@@ -1223,7 +1287,7 @@ today() + years(1) + months(1)
 ```
 
 ```
-## [1] "2021-10-08"
+## [1] "2021-10-09"
 ```
 
 ---
@@ -1250,7 +1314,7 @@ inicio + months(1)
 
 --
 
-Pero no es una función tan robusta. .pur¿Qué pasa con los meses de 31 días?
+Pero no es una función tan robusta. .pur[¿Qué pasa con los meses de 31 días?]
 
 --
 
@@ -1304,6 +1368,9 @@ bisiesto %m+% years(1)
 ## [1] "2021-02-28"
 ```
 
+--
+
+
 ```r
 bisiesto %m+% days(1)
 ```
@@ -1318,6 +1385,7 @@ Además se pueden generar automáticamente varios periodos. .pur[Esto puede ser 
 
 
 ```r
+inicio &lt;- ymd("2020-08-31")
 inicio %m+% months(1:6)
 ```
 
@@ -1325,8 +1393,6 @@ inicio %m+% months(1:6)
 ## [1] "2020-09-30" "2020-10-31" "2020-11-30" "2020-12-31" "2021-01-31"
 ## [6] "2021-02-28"
 ```
-
-
 
 ---
 
@@ -1382,6 +1448,78 @@ Ahora con `%/%`.
 ## [1] 52
 ```
 
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Mini-ejercicio 3
+
+--
+&lt;br/&gt;
+Vamos a utilizar la base de datos donde creamos "fecha_nac" y "fecha_ins".
+
+--
+
+La variable "fecha_nac" refiere a la .pur[fecha de nacimiento] de un nacido durante el año estadístico 2017 y "fecha_ins" indica la .pur[fecha en que el nacido fue inscrito].
+
+--
+
+1- Genera una variable llamada "dif_days" que indique la **diferencia en días** entre que los nacidos nacieron y fueron inscritos.
+
+--
+
+2- Genera una variable llamada "dif_weeks" que indique la **diferencia en semanas enteras** (sin decimales) entre que los nacidos nacieron y fueron inscritos.
+
+--
+
+3- Escoje una de las dos variables creadas y **genera una tabla de resumen** que contenga la mínima diferencia, la máxima, diferencia media y la mediana.
+
+--
+
+.center[.medium-par[Para resolver el punto 3 tendrán que googlear un poco 🕵️]]
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Mini-ejercicio 3
+
+
+1- Generar "dif_days".
+
+--
+
+
+```r
+nac2017 &lt;- nac2017 %&gt;% 
+  mutate(dif_days = (fecha_nac %--% fecha_ins) / days(1))
+```
+
+--
+
+2- Generar "dif_weeks".
+
+
+```r
+nac2017 &lt;- nac2017 %&gt;% 
+  mutate(dif_weeks = (fecha_nac %--% fecha_ins) %/% weeks(1))
+```
+
+3- Generación tabla de resumen de estadísticos.
+
+
+```r
+resumen_dif &lt;- nac2017 %&gt;% summarise(min_dif = min(dif_days),
+                                     max_dif = max(dif_days),
+                                     media_dif = mean(dif_days),
+                                     median_dif = median(dif_days))
+```
+
 ---
 
 background-image: url("imagenes/fondo2.PNG")
@@ -1413,6 +1551,62 @@ Pues `lubridate` ofrece herramientas .medium-par-red[precisas] y .medium-par-red
 --
 
 Pueden encontrar muchísima más información [aquí](https://lubridate.tidyverse.org/).
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Tarea para la 🏠
+
+--
+
+En el archivo "nacimientos.rar" que se encuentra disponible en la carpeta **'data/tarea' en la sesion 3 de nuestro canal en Teams (Generación I)**, encontrarán las siguientes bases de datos:
+
+--
+
+- **nac2017_j1.xlsx**
+- **nac2017_j2.xlsx**
+- **nac2017_j3.xlsx**
+
+--
+
+Estas bases de datos .pur[fueron creadas a partir de la base de datos oficial de nacimientos del 2017].
+
+--
+
+1- En primer lugar, **cargue estos 3 objetos en su entorno y explórelos**. .pur[¿Qué son y cómo se relacionan estos objetos?]
+
+--
+
+2- Genera en **nac2017_j2** y **nac2017_j3** las variables "fecha_nac", "fecha_ins" y "dif_days", tal como lo hiciste en el ejercio anterior.
+
+--
+
+3- Ahora, une **nac2017_j1** con **nac2017_j2**, conservando todos los registros de **nac2017_j1** y solo las variables "fecha_nac", "fecha_ins" y "dif_days" de **nac2017_j2**, que acabas de crear.
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Tarea para la 🏠
+
+--
+
+4- .pur[¿Qué sucedió al unir **nac2017_j1** con **nac2017_j2**? ¿Se unieron todos los registros? Si no lo hicieron, ¿por qué pasó eso?]
+
+--
+
+5- Ahora .pur[ensambla] **nac2017_j2** y **nac2017_j3** y este nuevo objeto únelo con **nac2017_j1**, conservando solo "fecha_nac", "fecha_ins" y "dif_days" del objeto ensamblado.
+
+--
+
+6- .medium-par-red[¿Qué pasó ahora? 🙂]
+
 
 ---
 
